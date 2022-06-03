@@ -1,5 +1,5 @@
 <script>
-let contract;
+let contract = (location.hash.length > 0 ? location.hash.slice(1) : "");
 let network;
 let loaded;
 let display = "hidden";
