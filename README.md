@@ -1,48 +1,37 @@
-# Svelte + Vite
+# Skinnerfactory
 
-This template should help get you started developing with Svelte in Vite.
+> Skinnerbox factory
 
-## Recommended IDE Setup
+Website: https://skinnerbox.factoria.app
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+Skinnerfactory is a web app that lets you generate and download [Skinnerbox](https://github.com/factoria-org/skinnerbox) or [Skinnerbox 2](https://github.com/factoria-org/skinnerbox2) minting websites.
 
-## Need an official Svelte framework?
+# Features
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+## 1. Instant load
 
-## Technical considerations
+The Skinnerbox and Skinnerbox2 websites do not cache IPFS content (invites, config, placeholder image, etc.) by default. This often results in very slow load time for your minting pages.
 
-**Why use this over SvelteKit?**
+Skinnerfactory solves this problem by dynamically downloading all the IPFS content in the browser and generating a static site that hardcodes all the IPFS content.
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-  `vite dev` and `vite build` wouldn't work in a SvelteKit environment, for example.
+**This means your minting site will ALWAYS load instantly.**
 
-This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+## 2. Containerized archive
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+Skinnerfactory generates a zip file that contains your entire minting site.
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+You can unzip the file and host it on any web hosting provider you want, such as Github pages, netlify, vercel, etc.
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+Skinnerfactory also directly links to [Netlify drop](https://app.netlify.com/drop) so you can instantly drag and drop the downloaded zip archive and go live in seconds, with no hassle.
 
-**Why include `.vscode/extensions.json`?**
+# How it works
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+This repository is a 100% static website with NO SERVER.
 
-**Why enable `checkJs` in the JS template?**
+It dynamically downloads the [Skinnerbox](https://github.com/factoria-org/skinnerbox) and [Skinnerbox2](https://github.com/factoria-org/skinnerbox2) repositories, updates the configs, and caches content, and compresses the result in a single zip file.
 
-It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
+# Source code
 
-**Why is HMR not preserving my local component state?**
+This web app is powered by [svelte](https://svelte.dev/).
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
+There is a single file that takes care of the entire app: [App.svelte](src/App.svelte). If you want to understand how things work, check out that file.

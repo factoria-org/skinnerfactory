@@ -52,6 +52,7 @@ const box = (zip) => {
   zip.file("box.json", new Blob([bytes], { type: "application/json;charset=utf-8" }));
 }
 const cache = async (zip) => {
+  // Start caching
   await f0.init({
     web3: web3,
     contract,
@@ -68,10 +69,7 @@ const cache = async (zip) => {
   })
   let cid = p.raw.image.replace("ipfs://" , "")
   zip.file(cid, blob)
-
   f0.cached[image] = cid
-
-  console.log("f0.cached", f0.cached)
   let cacheJSON = JSON.stringify(f0.cached, null, 2)
   const bytes = new TextEncoder().encode(cacheJSON)
   zip.file("cached.json", new Blob([bytes], { type: "application/json;charset=utf-8" }));
@@ -102,7 +100,6 @@ const generate = async () => {
   if (contract && network && !loaded) {
     if (network === "rinkeby" || network === "main") {
       await sync()
-      console.log("synchronized")
     } else {
       alert("must be either 'rinkeby' or 'main'")
     }
