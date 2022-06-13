@@ -1,4 +1,5 @@
 <script>
+import Preview from "./lib/Preview.svelte";
 let contract = (location.hash.length > 0 ? location.hash.slice(1) : "");
 let network;
 let loaded;
@@ -7,6 +8,8 @@ let generatorDisplay = "";
 let zipfile;
 let repository;
 let infura;
+let step = 1;
+let customstyle;
 const files = {
   "https://factoria-org.github.io/skinnerbox/": [
     ".nojekyll",
@@ -15,9 +18,13 @@ const files = {
     "index.html",
     "mint.html",
     "opensea.png",
+    "looksrare.png",
     "rarible.png",
     "skinnerbox.gif",
     "style.css",
+    "custom.css",
+    "etherscan.png",
+    "handleerror.js",
   ],
   "https://factoria-org.github.io/skinnerbox2/": [
     ".nojekyll",
@@ -27,10 +34,14 @@ const files = {
     "index.html",
     "mint.html",
     "opensea.png",
+    "looksrare.png",
     "rarible.png",
     "skinnerbox.gif",
     "skinnerbox2.gif",
     "style.css",
+    "custom.css",
+    "etherscan.png",
+    "handleerror.js",
   ],
 }
 const web3 = new Web3(window.ethereum)
@@ -73,6 +84,13 @@ const cache = async (zip) => {
   let cacheJSON = JSON.stringify(f0.cached, null, 2)
   const bytes = new TextEncoder().encode(cacheJSON)
   zip.file("cached.json", new Blob([bytes], { type: "application/json;charset=utf-8" }));
+
+}
+const custom = async (zip) => {
+  if (customstyle) {
+    const cssbytes = new TextEncoder().encode(customstyle)
+    zip.file("custom.css", new Blob([cssbytes], { type: "text/css" }))
+  }
 }
 const sync = async () => {
   // Fetch Invites
@@ -87,9 +105,9 @@ const sync = async () => {
     let file = f[i]
     zip.file(file, blobs[i])
   }
-  let boxjson = await box(zip)
-  let cached = await cache(zip)
-
+  await box(zip)
+  await cache(zip)
+  await custom(zip)
   // zip
   zipfile = await zip.generateAsync({type: 'blob'})
   loaded = true;
@@ -105,23 +123,39 @@ const generate = async () => {
     }
   }
 }
-web3.eth.getChainId().then((chainId) => {
+const init = async () => {
+  let chainId = await web3.eth.getChainId()
   if (chainId.toString() === "4") {
     network = "rinkeby"
   } else if (chainId.toString() === "1") {
     network = "main"
   }
-})
+}
+const style = (e) => {
+  console.log(e.detail.style)
+  customstyle = e.detail.style
+}
+init()
 </script>
 <main>
   <nav>
     <h1>skinnerbox</h1>
-    <div class='description'>factoria minting site generator</div>
-    <div class='connection'>connected to {network}</div>
+    <div class='description'>NFT vending machine vending machine</div>
+    <div class='buttons'>
+      <a href="https://factoria.app/docs"><i class="fa-solid fa-circle-question"></i></a>
+      <a href="https://github.com/factoria-org/openfactoria"><i class="fa-brands fa-github"></i>    </a>
+      <a href="https://twitter.com/skogard"><i class="fa-brands fa-twitter"></i></a>
+      <a href="https://discord.gg/BZtp5F6QQM"><i class="fa-brands fa-discord"></i></a>
+    </div>
+    <div class='connection'>{network}</div>
   </nav>
   <section>
-    <h2>Step 1. Deploy collection</h2>
-    <div class='description'>First deploy your contract on <a href="https://factoria.app">Factoria</a>.</div>
+    <h2>Step 1. Customize collection</h2>
+    <div class='description'>Deploy your contract on <a href="https://open.factoria.app">Factoria</a> and enter the contract address below:</div>
+    <input type='text' bind:value={contract} placeholder="enter your {network} factoria contract address">
+    {#if network && contract && web3}
+    <Preview network={network} contract={contract} web3={web3} on:style={style}/>
+    {/if}
   </section>
   <section>
     <h2>Step 2. Download website</h2>
@@ -131,7 +165,7 @@ web3.eth.getChainId().then((chainId) => {
         <option value="https://factoria-org.github.io/skinnerbox/">Skinnerbox 1</option>
         <option value="https://factoria-org.github.io/skinnerbox2/">Skinnerbox 2</option>
       </select>
-      <input type='text' bind:value={contract} placeholder="enter your {network} factoria contract address">
+      <input type='hidden' bind:value={contract} placeholder="enter your {network} factoria contract address">
       {#if repository == "https://factoria-org.github.io/skinnerbox2/"}
         <input type='text' bind:value={infura} placeholder="enter your infura ID (required for walletconnect)">
       {/if}
@@ -142,22 +176,22 @@ web3.eth.getChainId().then((chainId) => {
     </div>
   </section>
   <section>
-    <h2>Step 2. Publish website</h2>
-    <div class='description'>Once you download your website, you can publish it anywhere. GitHub pages, Vercel, Netlify, or whichever web hosting provider you use.</div>
+    <h2>Step 3. Publish website</h2>
+    <div class='description'>Once you download your website, you can publish it anywhere. Just unzip it and upload to any web hosting provider, such as <a href="https://pages.github.com/">GitHub pages</a>, <a target="_blank" href="https://vercel.com">Vercel</a>, <a target="_blank" href="https://www.netlify.com/">Netlify</a>, or whichever web hosting provider you use.</div>
     <blockquote>
       <div class='description'><b>TIP:</b> Want to try publishing instantly without hassle?<br>Go to Netlify drop and just drag & drop the downloaded zip file.</div>
-      <div>
-        <a target="_blank" class='btn' href="https://app.netlify.com/drop">Publish on Netlify</a>
-      </div>
-      <br>
       <img src="skinnerboxgen.gif">
+      <br>
+      <div>
+        <a target="_blank" class='btn' href="https://app.netlify.com/drop"><i class="fa-solid fa-upload"></i> Instant Publish with Netlify Drop</a>
+      </div>
     </blockquote>
   </section>
 </main>
 <style>
 nav {
-  text-align: center;
-  margin-bottom: 40px;
+  padding: 20px 0 10px;
+  margin: 0;
 }
 h1 {
   font-size: 40px;
@@ -168,37 +202,37 @@ a {
   color: yellowgreen;
 }
 h2 {
-  color: white;
+  color: yellowgreen;
   margin: 0 0 10px;
   font-size: 30px;
   letter-spacing: -1px;
 }
 .loading {
+  margin-top: 10px;
   padding: 10px;
   text-align: center;
 }
 blockquote {
   padding: 20px;
-  margin: 10px 0 0;
-  background: rgba(0,0,0,0.1);
+  margin: 20px 0 0;
+  background: rgba(0,0,0,0.3);
 }
 section img {
   width: 100%;
 }
 main {
   font-size: 14px;
-  max-width: 800px;
   width: 100%;
-  margin: 100px auto;
+  margin: 0 auto;
+  max-width: 700px;
+  padding: 10px;
+  box-sizing: border-box;
 }
 section {
-  margin: 20px 0;
-  /*
-  border-top: 1px solid rgba(255,255,255,0.1);
-  */
-  border-left: 3px solid rgba(255,255,255,0.5);
-  padding: 20px 30px;
-  box-sizing: border-box;
+  margin: 40px 0;
+  color: rgba(255,255,255,0.8);
+}
+section > *{
 }
 hr {
   border: none;
@@ -211,6 +245,7 @@ hr {
 }
 .description {
   margin-bottom: 10px;
+  color: rgba(255,255,255,0.8);
 }
 select {
   width: 100%;
@@ -219,16 +254,27 @@ select {
   color: royalblue;
 }
 input[type=submit], button, .btn {
+  cursor: pointer;
   display: inline-block;
-  background: none;
-  color: white;
-  padding: 5px 20px;
+  padding: 15px 20px;
   border-radius: 2px;
   text-decoration: none;
+  /*
   border: 1px solid rgba(255,255,255,0.8);
+  background: none;
+  color: white;
+  */
+  margin-top: 5px;
+  background: royalblue;
+  color: white;
+  border: none;
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 10px 0;
+  text-align: center;
 }
 input[type=text] {
   border: none;
@@ -239,8 +285,18 @@ input[type=text] {
   margin: 10px 0;
 }
 .connection {
-  color: yellowgreen;
+  color: #9acd32;
   font-weight: bold;
-  margin: 20px 0;
+  border-left: 5px solid yellowgreen;
+  padding: 5px 10px;
+  margin: 10px 0;
+  font-size: 12px;
+}
+.buttons {
+  padding: 10px 0;
+}
+.buttons a {
+  padding: 5px;
+  color: white;
 }
 </style>
