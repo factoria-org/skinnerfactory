@@ -116,16 +116,18 @@ const sync = async () => {
 }
 const generate = async () => {
   if (contract && network && !loaded) {
-    if (network === "rinkeby" || network === "main") {
+    if (network === "rinkeby" || network === "main" || network === "goerli") {
       await sync()
     } else {
-      alert("must be either 'rinkeby' or 'main'")
+      alert("must be either 'rinkeby' or 'main' or 'goerli'")
     }
   }
 }
 const init = async () => {
   let chainId = await web3.eth.getChainId()
-  if (chainId.toString() === "4") {
+  if (chainId.toString() === "5") {
+    network = "goerli"
+  } else if (chainId.toString() === "4") {
     network = "rinkeby"
   } else if (chainId.toString() === "1") {
     network = "main"
@@ -147,7 +149,6 @@ init()
       <a href="https://twitter.com/skogard"><i class="fa-brands fa-twitter"></i></a>
       <a href="https://discord.gg/BZtp5F6QQM"><i class="fa-brands fa-discord"></i></a>
     </div>
-    <div class='connection'>{network}</div>
   </nav>
   <section>
     <h2>Step 1. Customize collection</h2>
@@ -199,10 +200,10 @@ h1 {
   margin: 0px;
 }
 a {
-  color: yellowgreen;
+  color: black;
 }
 h2 {
-  color: yellowgreen;
+  color: black;
   margin: 0 0 10px;
   font-size: 30px;
   letter-spacing: -1px;
@@ -215,7 +216,6 @@ h2 {
 blockquote {
   padding: 20px;
   margin: 20px 0 0;
-  background: rgba(0,0,0,0.3);
 }
 section img {
   width: 100%;
@@ -229,14 +229,17 @@ main {
   box-sizing: border-box;
 }
 section {
-  margin: 40px 0;
-  color: rgba(255,255,255,0.8);
+  color: black;
+  background: #fafafa;
+  border: 2px solid #eaeaea;
+  padding: 20px;
+  box-sizing: border-box;
+  margin: 20px 0;
 }
 section > *{
 }
 hr {
   border: none;
-  background: rgba(255,255,255,0.1);
   height: 1px;
   margin: 20px 0;
 }
@@ -245,28 +248,24 @@ hr {
 }
 .description {
   margin-bottom: 10px;
-  color: rgba(255,255,255,0.8);
+  color: black;
 }
 select {
   width: 100%;
   padding: 10px;
   font-weight: bold;
-  color: royalblue;
+  color: black;
+  border: 2px solid #eaeaea;
 }
 input[type=submit], button, .btn {
+  background: black;
+  color: white;
   cursor: pointer;
   display: inline-block;
   padding: 15px 20px;
   border-radius: 2px;
   text-decoration: none;
-  /*
-  border: 1px solid rgba(255,255,255,0.8);
-  background: none;
-  color: white;
-  */
   margin-top: 5px;
-  background: royalblue;
-  color: white;
   border: none;
   font-size: 12px;
   font-weight: bold;
@@ -277,7 +276,7 @@ input[type=submit], button, .btn {
   text-align: center;
 }
 input[type=text] {
-  border: none;
+  border: 2px solid #eaeaea;
   padding: 10px;
   box-sizing: border-box;
   width: 100%;
@@ -285,9 +284,8 @@ input[type=text] {
   margin: 10px 0;
 }
 .connection {
-  color: #9acd32;
   font-weight: bold;
-  border-left: 5px solid yellowgreen;
+  border-left: 5px solid black;
   padding: 5px 10px;
   margin: 10px 0;
   font-size: 12px;
@@ -297,6 +295,6 @@ input[type=text] {
 }
 .buttons a {
   padding: 5px;
-  color: white;
+  color: black;
 }
 </style>

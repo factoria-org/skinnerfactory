@@ -119,8 +119,6 @@ onMount(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgb(131,58,180);
-  background-image: linear-gradient(to right top, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
   color: white;
   padding: 50px 0;
 }
@@ -215,7 +213,6 @@ tr {
   padding: 20px;
   box-sizing: border-box;
   font-size: 15px;
-  background: rgba(255,255,255,0.1);
   margin-top: 20px;
   border-radius: 50px;
 }
@@ -235,7 +232,6 @@ tr a {
   display:flex;
   padding: 10px 20px;
   box-sizing: border-box;
-  background: rgba(0,0,0,0.2);
   align-items: center;
 }
 .editor-item label {
@@ -248,6 +244,7 @@ tr a {
   flex-grow: 1;
   padding: 10px;
   box-sizing: border-box;
+  border: 2px solid #eaeaea;
 }
 .loader {
   padding: 50px;
